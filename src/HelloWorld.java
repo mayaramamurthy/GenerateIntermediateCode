@@ -1,9 +1,4 @@
-
-public class HelloWorld {
-
-	public static void main(String[] args) {
-		System.out.println("Hello World!");
-
+int t = 5;
+	if (t = = 5) {
+		System.out.println ("It's 5!");
 	}
-
-}
