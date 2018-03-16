@@ -15,6 +15,7 @@ public class bytecodegenerator {
 	static FileInputStream fis;
 	static Scanner sc;
 	static String word = "";
+	static String str = "";
 	static Integer val = 0;
 	static char ch;
 	static int global, lastline, lastpos;
@@ -24,10 +25,11 @@ public class bytecodegenerator {
 			PERIOD = 14, COMMA = 15, COLON = 16, RPAREN = 17, RBRAK = 18,
 			OF = 19, THEN = 20, DO = 21, LPAREN = 22, LBRAK = 23, NOT = 24,
 			EQUALS = 25, NUMBER = 26, IDENT = 27, SEMICOLON = 28,
-			END = 29, ELSE = 30, IF = 31, WHILE = 32, ARRAY = 33,
+			END = 29, ELSE = 30, IF = 31, WHILE = 32, FOR = 33,
 			INT = 34, BOOLEAN = 35, DOUBLE = 36, FLOAT = 37, STRING = 38,
 			PUBLIC = 39, STATIC = 40, VOID = 41, EOF = 42, NONE = 43, 
-			SPL = 44, LANGB = 45, RANGB = 46, QUOTE = 46, EE=47, PP = 48, MM = 49;
+			SPL = 44, LANGB = 45, RANGB = 46, QUOTE = 46, EE=47, PP = 48, 
+			MM = 49, AA = 50, NEW = 51, SP = 52, TRUE = 53, FALSE = 54;
 	
 	 static HashMap<String, Integer> keywords = new HashMap<String, Integer>();
 	 
@@ -54,33 +56,40 @@ public class bytecodegenerator {
 	
 	public static void number () throws IOException {
 		    sym = NUMBER;
-		    int val = 0;
-		    while (Character.isDigit(ch)) {
+		//    System.out.println("hai");
+		    //int val = 0;
+		    while (Character.isDigit(ch) || ch == '.') {
+			    System.out.print(ch);
 		        val = 10 * val + Character.getNumericValue(ch);
-		        System.out.println(val);
-		        getChar();
+		        //System.out.println(val);
+		        getChar();	        
 		    }
+		   // getChar();	
+		  //  sym = NUMBER;
 	}
 	
 	public static void identKW() throws IOException {
 	    int start = index - 1;
-	    String str = String.valueOf(ch);
-	    while (!Character.isWhitespace(ch) | Character.isDigit(ch) | Character.isLetter(ch) ){
+	    str = String.valueOf(ch);
+	    while (!Character.isWhitespace(ch) || Character.isDigit(ch) || ch == '.' || Character.isLetter(ch) ){
 	    		getChar();
 	    		str += String.valueOf(ch);
 	    	}
 	    str = str.replaceAll("\\s+","");
-	  //  System.out.println(str);
+	 //   System.out.println(str);
 	  //  System.out.println(keywords.get(str));
 	    if (keywords.containsKey(str)) {
-	    		val = keywords.get(str);
-	    	    System.out.println(str);
+	    		sym = keywords.get(str);
+	    	//	System.out.println(str);
+	    		
+	    	   //System.out.println(str);
 	    }
 	    else {
-	    		val = IDENT;
-	    	    System.out.println(str);
+	    		sym = IDENT;
+	    		//val = str;
+	   // 	    System.out.print(str);
 	    }
-	    getChar();
+	   // getChar();
 	}
 		
 	public static void comment() throws IOException {
@@ -96,11 +105,14 @@ public class bytecodegenerator {
 	}
 	
 	public static void readString() throws IOException {
+		getChar();
 	    while (ch != '"') {
 	    		System.out.print(String.valueOf(ch));
 	    		getChar();
 	    }
+	    System.out.print(ch);
 	    getChar();
+	 //   getSym();
 	}
 	
 	
@@ -108,134 +120,152 @@ public class bytecodegenerator {
 	    while (ch <= ' ' | ch == '\t') getChar();
 	    if (Character.isLetter(ch)) {
 	    		identKW();
-	    		getSym();
 	    		
 	    }
 	    else if (Character.isDigit(ch)) {
 	    		number();
-	    		getSym();System.out.println(ch);
+	    		getSym();//System.out.println(ch);
 	    }
 	    else if (ch == '/') { 
 	    		comment(); 
-	    		getSym();System.out.println(ch);
+	    		getSym();//System.out.println(ch);
 	    }
 	    else if (ch == '"') { 
-	    		System.out.println(ch);
+	    		System.out.print(ch);
     			readString();
-    			getSym();
+    			//getSym();
 	    }
 	    else if (ch == '{') { 
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	    		getChar(); 
 	    		sym = LANGB;
 	    }
 	    else if (ch == '}') {
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	    		getChar();
 	    		sym = RANGB;
 	    }
 	    else if (ch == '/') {
     		comment(); 
-    		getSym();System.out.println(ch);
+    		getSym();//System.out.println(ch);
 	    }
 	    else if (ch == '!') {
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	    		getChar(); 
 	    		sym = NOT;
 	    }
 	    else if (ch == '*') {
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	    		getChar(); 
 	    		sym = TIMES;
 	    }
 	    else if (ch == '+') {
-    			System.out.println(ch);
+    			//System.out.println(ch);
 	        getChar();
 	        if (ch == '+') {
-				System.out.println(ch);
+				//System.out.println(ch);
 	        		getChar();
 	        		sym = PP;
 	        }
 	        else sym = PLUS;
 	    }
 	    else if (ch == '-') {
-    			System.out.println(ch);
+    			//System.out.println(ch);
 	        getChar();
 	        if (ch == '=') {
-				System.out.println(ch);
+				//System.out.println(ch);
 	        		getChar();
 	        		sym = MM;
 	        }
 	        else sym = MINUS;
 	    }
 	    else if (ch == '=') {
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	        getChar();
 	        if (ch == '=') {
-				System.out.println(ch);
+				//System.out.println(ch);
 	        		getChar();
 	        		sym = EE;
 	        }
 	        else sym = EQUALS;
 	    }
+	    else if (ch == '|') {
+	    		//System.out.println(ch);
+	        getChar();
+	        if (ch == '|') {
+				//System.out.println(ch);
+	        		getChar();
+	        }
+    			sym = OR;
+	    }
+	    else if (ch == '&') {
+	    		//System.out.println(ch);
+	        getChar();
+	        if (ch == '&') {
+				//System.out.println(ch);
+	        		getChar();
+	        		sym = AA;
+	        }
+	        else sym = AND;
+	    }
 	    else if (ch == '<') {
-			System.out.println(ch);
+			//System.out.println(ch);
 	        getChar();
 	        if (ch == '=') {
-    				System.out.println(ch);
+    				//System.out.println(ch);
 	        		getChar();
 	        		sym = LE;
 	        }
 	        else if (ch == '>') {
-				System.out.println(ch);
+				//System.out.println(ch);
 	        		getChar(); 
 	        		sym = NE;
 	        }
 	        else sym = LT;
 	    }
 	    else if (ch == '>') {
-			System.out.println(ch);
+			//System.out.println(ch);
 	        getChar();
 	        if (ch == '=') {
-				System.out.println(ch);
+				//System.out.println(ch);
 	        		getChar();
 	        		sym = GE;
 	        }
 	        else sym = GT;
 	    }
 	    else if (ch == ';') {
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	    		getChar(); 
 	    		sym = SEMICOLON;
 	    }
 	    else if (ch == ',') {
-			System.out.println(ch);
+			//System.out.println(ch);
 	    		getChar(); 
 	    		sym = COMMA;
 	    }
 	    else if (ch == ':') {
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	    		getChar(); 
 	    		sym = COLON;
 	    }
 	    else if (ch == '.'){
-	    	System.out.println(ch);
+	    	//System.out.println(ch);
 	    		getChar(); 
 	    		sym = PERIOD;
 	    }
 	    else if (ch == '(') {
-	    		System.out.println(ch);
-	    		//getChar(); 
+	    		//System.out.println(ch);
+	    		getChar(); 
 	    		sym = LPAREN;
 	    }
 	    else if (ch == ')') {
-	    		System.out.println(ch);
+	    		//System.out.println(ch);
 	    		getChar(); 
 	    		sym = RPAREN;
 	    }
 	    
 	    else if (ch == '[') {
-    		System.out.println(ch);
+    		//System.out.println(ch);
 	    		getChar(); 
 	    		sym = LBRAK;
 	    }
@@ -280,12 +310,16 @@ public class bytecodegenerator {
 
 	}
 	
+	public static void init(FileInputStream file) throws IOException {
+		fis = file;
+		initKeywords();
+		getChar();
+		getSym();
+	}
 
 	private static void initKeywords() {
 		 keywords.put("div", DIV);
 		 keywords.put("mod", MOD);
-		 keywords.put("and", AND);
-		 keywords.put("or", OR);
 		 keywords.put("of", OF);
 		 keywords.put("then", THEN);
 		 keywords.put("do",DO);
@@ -294,7 +328,7 @@ public class bytecodegenerator {
 		 keywords.put("else", ELSE);
 		 keywords.put("if", IF);
 		 keywords.put("while", WHILE);
-		 keywords.put("array", ARRAY);
+		 keywords.put("for", FOR);
 		 keywords.put("int", INT);
 		 keywords.put("boolean", BOOLEAN);
 		 keywords.put("double", DOUBLE);
@@ -303,7 +337,11 @@ public class bytecodegenerator {
 		 keywords.put("public", PUBLIC);
 		 keywords.put("static", STATIC);
 		 keywords.put("void", VOID);
+		 keywords.put("new", NEW);
+		 keywords.put("true", TRUE);
+		 keywords.put("false", FALSE);
 		 keywords.put("System.out.println", SPL);
+		 keywords.put("System.out.print", SP);
 	}
 
 }
