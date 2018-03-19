@@ -1,14 +1,13 @@
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class bytecodegenerator {
+public class Lexer {
 	public String [] instr = {"aload", "bipush", "istore_", "istore"};
 	int instrNum = 0;
-	static int fileLength = (int) new File("HellowWorld.java").length();
+	static int fileLength = (int) new File("HellowWorld.pava").length();
 	int n = 0;
 	static int index = 0;
 	static File source;
@@ -285,10 +284,10 @@ public class bytecodegenerator {
 	public static void main(String[] args) throws IOException {
 		initKeywords();
 		index = 0;
-		source = new File("HelloWorld.java");
+		source = new File("HelloWorld.pava");
 		sc = new Scanner(source);
 		
-			fis = new FileInputStream("HelloWorld.java");
+			fis = new FileInputStream("HelloWorld.pava");
 		 
 	      
 	      while (fis.available() > 0) {

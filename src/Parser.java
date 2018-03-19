@@ -1,12 +1,10 @@
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
-public class P0 {
-	static bytecodegenerator scanner = new bytecodegenerator ();
+public class Parser {
+	static Lexer scanner = new Lexer();
 	
 	static int ident = 0, typ = 0, val;
 	static char indent = '	';
@@ -24,7 +22,7 @@ public class P0 {
 	static ArrayList<Integer> FOLLOWPROCCALL = new ArrayList<Integer>();
 	static ArrayList<Integer> STRONGSYMS = new ArrayList<Integer>();
 	
-	public P0 (int tp) {
+	public Parser(int tp) {
 		typ = scanner.NONE;
 		val = tp;
 	}
@@ -54,8 +52,8 @@ public class P0 {
 		System.out.println(s);
 	}
 	
-	public static P0 Selector (P0 x) throws IOException {
-		P0 y = null;
+	public static Parser Selector (Parser x) throws IOException {
+		Parser y = null;
 		while  (scanner.sym == scanner.LBRAK) { // scanner.sym == scanner.PERIOD ||){
 			//finish this if doing methods
 			if (scanner.sym == scanner.PERIOD) {
@@ -86,8 +84,8 @@ public class P0 {
 		return y;
 	}
 	
-	public static P0 factor() throws IOException {
-		P0 x = null;
+	public static Parser factor() throws IOException {
+		Parser x = null;
 
 		if (scanner.sym == scanner.IDENT) {
 			x.val = scanner.val;
@@ -133,8 +131,8 @@ public class P0 {
 		return x;
 	}
 
-	public static P0 term () throws IOException {
-		P0 x = factor(), y;
+	public static Parser term () throws IOException {
+		Parser x = factor(), y;
 		int op;
 		while (scanner.sym == scanner.TIMES || scanner.sym == scanner.DIV || scanner.sym == scanner.MOD) {
 			op = scanner.sym;
@@ -161,8 +159,8 @@ public class P0 {
 		return x;
 	}
 	
-	public static P0 simpleExpression () throws IOException {
-		P0 x = null, y = null;
+	public static Parser simpleExpression () throws IOException {
+		Parser x = null, y = null;
 		int op;
 		if (scanner.sym == scanner.PLUS) {
 			write (" + ");
@@ -221,8 +219,8 @@ public class P0 {
 		}
 	}
 	
-	public static P0 expression() throws IOException {
-		P0 x = null;
+	public static Parser expression() throws IOException {
+		Parser x = null;
 		x = simpleExpression();
 		int op;
 		while (scanner.sym == scanner.EQ || scanner.sym == scanner.NE || scanner.sym == scanner.EE || scanner.sym == scanner.AA || scanner.sym == scanner.PP || scanner.sym == scanner.LE || scanner.sym == scanner.LT || scanner.sym == scanner.GE ||scanner.sym == scanner.GT) {
@@ -237,15 +235,15 @@ public class P0 {
 			else if (op == scanner.PP) write(" ++ ");
 			else if (op == scanner.MM) write(" -- ");
 			scanner.getSym();
-			P0 y = expression();
+			Parser y = expression();
 	
 			
 		}
 		return x;
 	}
 	
-	public static P0 compoundStatement (int l) throws IOException {
-		P0 x, y;
+	public static Parser compoundStatement (int l) throws IOException {
+		Parser x, y;
 		x = statement (l+1);
 		while (scanner.sym == scanner.SEMICOLON || FIRSTSTATEMENT.contains(scanner.sym)) {
 			scanner.getSym();
@@ -260,8 +258,8 @@ public class P0 {
 	}
 	
 	
-	public static P0 statement (int l) throws IOException {
-		P0 x = null, y;
+	public static Parser statement (int l) throws IOException {
+		Parser x = null, y;
 		x.typ = scanner.sym;
 		if (scanner.sym == scanner.IF) {
 		        writeln(); 
@@ -419,7 +417,7 @@ public class P0 {
 
 	
 	public static void declarations (int l) throws IOException {
-		P0 x;
+		Parser x;
 		while (scanner.sym == scanner.INT) {
 			writeln(); write("int ");
 	        scanner.getSym();
@@ -581,7 +579,7 @@ public class P0 {
 	
 	public static void Program() throws IOException {
 		 declarations(0);
-		 P0 x = compoundStatement(1);
+		 Parser x = compoundStatement(1);
 		// writeln();
 	}
 	

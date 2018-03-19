@@ -711,7 +711,7 @@ public class P0 {
 
 	public static void main (String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		FileInputStream file = new FileInputStream ("HelloWorld.java");
+		FileInputStream file = new FileInputStream ("HelloWorld.pava");
 		compileString(file);
 	
 
