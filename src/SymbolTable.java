@@ -40,6 +40,20 @@ public class SymbolTable {
         obj = current;
     }
 
+    public static JObject find(String varName){
+        return find(root,varName);
+    }
+
+    private static JObject find(JObject current, String varName){
+        if(current == guard || current == null) return null;
+        if(current.name.equals(varName))return current;
+        JObject dsc = find(current.desc,varName);
+        if(dsc != null){
+            return dsc;
+        }
+        return find(current.next,varName);
+    }
+
     public static void openScope(){
 
     }
