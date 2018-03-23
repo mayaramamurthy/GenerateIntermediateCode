@@ -16,6 +16,9 @@ public class Lexer {
 	static String word = "";
 	static String str = "";
 	static Integer val = 0;
+	static int currNumber = 0;
+	static genByteCode JBC = new genByteCode();
+	static Parser p0 = new Parser();
 	static char ch;
 	static int global, lastline, lastpos;
 	static int wordIndex = 0, line = 0, pos=0, sym;
@@ -56,13 +59,25 @@ public class Lexer {
 	public static void number () throws IOException {
 		    sym = NUMBER;
 		//    System.out.println("hai");
-		    //int val = 0;
+		    int val = 0;
+		    String num = "";
+		   // val = Character.getNumericValue(ch);
 		    while (Character.isDigit(ch) || ch == '.') {
 			    System.out.print(ch);
-		        val = 10 * val + Character.getNumericValue(ch);
+			    if (ch != '.') {
+			    		val = (10 * val) + Character.getNumericValue(ch);
+			    }
+			    num += ch;
 		        //System.out.println(val);
 		        getChar();	        
+		        currNumber = val;
 		    }
+		  //  System.out.print(val);
+		 //   if (num.contains(".")) {
+		   // 		val = Double.parseDouble(num);
+		    //}
+		 //   val = Integer.parseInt(num);
+		 //  
 		   // getChar();	
 		  //  sym = NUMBER;
 	}
@@ -123,7 +138,7 @@ public class Lexer {
 	    }
 	    else if (Character.isDigit(ch)) {
 	    		number();
-	    		getSym();//System.out.println(ch);
+	    		//getSym();//System.out.println(ch);
 	    }
 	    else if (ch == '/') { 
 	    		comment(); 

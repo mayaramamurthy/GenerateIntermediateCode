@@ -5,9 +5,12 @@ import java.util.Map;
 
 public class Parser {
 	static Lexer scanner = new Lexer();
+	static genByteCode JBC = new genByteCode();
 	
 	static int ident = 0, typ = 0, val;
 	static char indent = '	';
+	static int instr = 0;
+	static int label;
 	
 	
 	static ArrayList<Integer> FIRSTFACTOR = new ArrayList<Integer>();
@@ -21,7 +24,10 @@ public class Parser {
 	static ArrayList<Integer> FOLLOWDECL = new ArrayList<Integer>();
 	static ArrayList<Integer> FOLLOWPROCCALL = new ArrayList<Integer>();
 	static ArrayList<Integer> STRONGSYMS = new ArrayList<Integer>();
-	
+
+	public Parser() {
+
+	}
 	public Parser(int tp) {
 		typ = scanner.NONE;
 		val = tp;
@@ -100,7 +106,7 @@ public class Parser {
 		}
 		while (scanner.sym == scanner.NUMBER) {
 			String key = getKey(scanner.sym);
-			System.out.print(scanner.val); 
+		//	System.out.print(scanner.val); 
 			scanner.getSym();
 			//System.out.println(scanner.sym);
 			 x = Selector(x);
@@ -203,8 +209,11 @@ public class Parser {
 			scanner.getSym();
 			if (scanner.sym == scanner.LPAREN) {
 				write ("(");
+				JBC.genGetStatic(instr, 5);
 				scanner.getSym();
+				JBC.loadConstant(instr, 6);
 				scanner.getSym();
+				JBC.genInvokeVirtual(instr, 7);
 				if (scanner.sym == scanner.RPAREN) {
 					write (")");
 					scanner.getSym();
@@ -232,10 +241,17 @@ public class Parser {
 			else if (op == scanner.LT) write(" < ");
 			else if (op == scanner.GE) write(" >= ");
 			else if (op == scanner.EE) write(" == ");
-			else if (op == scanner.PP) write(" ++ ");
-			else if (op == scanner.MM) write(" -- ");
+			else if (op == scanner.PP) {
+				write(" ++ ");
+				scanner.currNumber = 1;
+			}
+			else if (op == scanner.MM) {
+				write(" -- ");
+				scanner.currNumber = -1;
+			}
 			scanner.getSym();
 			Parser y = expression();
+			
 	
 			
 		}
@@ -268,9 +284,13 @@ public class Parser {
 		        if (scanner.sym == scanner.LPAREN) {
 			        write("( ");
 		        		scanner.getSym(); 
+		        		JBC.genILoad(instr, 1);	// need to fix this so it knows to pull the load from ST value
 		        		write (scanner.str);
 		        		scanner.getSym(); 
 			        x = expression();
+			        JBC.genInt(instr, scanner.currNumber);
+			        JBC.genIFCMPNE(instr, 37);
+			        JBC.genGoTo(instr, 45);
 			        if (scanner.sym == scanner.RPAREN) {
 			        		write (")");
 			        		scanner.getSym(); 
@@ -295,7 +315,6 @@ public class Parser {
 			        		scanner.getSym();
 			        		if (scanner.sym == scanner.LANGB) {
 			        			write("{");
-				            
 				            scanner.getSym();
 				            if (scanner.sym == scanner.SPL) {
 			        				println();
@@ -322,9 +341,13 @@ public class Parser {
 			if (scanner.sym == scanner.LPAREN) {
 				write ("(");
 				scanner.getSym(); 
+				JBC.genILoad(instr, 4);	// need to fix this so it knows to pull the load from ST value
 				write(scanner.str);
 				scanner.getSym();
 				x = expression();
+				JBC.genInt(instr, 1); // refer to ST value
+				JBC.genIFCMPNE(instr, 62);
+				JBC.genGoTo(instr, 45);
 				if (scanner.sym == scanner.RPAREN) {
 					write (")");
 					scanner.getSym();
@@ -365,6 +388,10 @@ public class Parser {
 			            if (scanner.sym == scanner.EQUALS || scanner.sym == scanner.EQ) {
 			            		write(" = ");
 			            		scanner.getSym();
+			            		JBC.genInt(instr, scanner.val);
+			            		JBC.genStoreInteger(instr);
+			            		JBC.genILoad(instr, 6);	// six needs to be reliant on byte just pushed
+			            		JBC.genBipush (instr, 10);
 			            }
 			            else mark("= expected");
 			            x = expression();
@@ -379,6 +406,7 @@ public class Parser {
 			        		write(scanner.str);
 			        		scanner.getSym();
 			        		expression();
+			        		JBC.genIFCMPNE(instr, 8);
 			        		if (scanner.sym == scanner.SEMICOLON) {
 				        		write ("; ");
 				        		scanner.getSym();
@@ -386,6 +414,7 @@ public class Parser {
 					        		write(scanner.str);
 					        		scanner.getSym();
 					        		expression();
+					        		JBC.genIINC(instr, 6, scanner.currNumber); // 6 refers to loaded variable
 						        	if (scanner.sym == scanner.RPAREN) {
 						        		write (")");
 						        		scanner.getSym();
@@ -395,6 +424,7 @@ public class Parser {
 						        			if (scanner.sym == scanner.SPL) {
 						        				println();
 						        			}
+						        			JBC.genGoTo(instr, 65); 	// return to top of loop
 						        			if (scanner.sym == scanner.RANGB) {
 						        				writeln();
 						        				write("}");
@@ -438,6 +468,8 @@ public class Parser {
 	        		scanner.getSym();
 	        }
 	        else mark("; expected");
+	        JBC.genInt(instr, scanner.val);
+	        JBC.genStoreInteger (instr);
 		}
 		while (scanner.sym == scanner.DOUBLE) {
 			writeln(); write("double ");
@@ -459,6 +491,8 @@ public class Parser {
 	        		write (";");
 	        		scanner.getSym();
 	        }
+	        JBC.loadDouble2W (instr, 2);
+	        JBC.storeDouble (instr);
 	       // else mark("; expected");
 		}
 
@@ -486,6 +520,7 @@ public class Parser {
 		if (scanner.sym == scanner.BOOLEAN) {
 			writeln(); write( "boolean ");
 	        scanner.getSym();
+	        int boolValue = 0;
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
     				write(scanner.str);
@@ -498,6 +533,9 @@ public class Parser {
 	           // x = expression();
 	            if (scanner.sym == scanner.TRUE || scanner.sym == scanner.FALSE) {
 	            		write (scanner.str);
+	            		if (scanner.sym == scanner.TRUE){
+	            			boolValue = 1;
+	            		}
 	            }
 	            else {
 	            		mark ("Invalid type");
@@ -509,6 +547,8 @@ public class Parser {
 	        		write (";");
 	        		scanner.getSym();
 	        }
+	        JBC.genBoolean(instr, boolValue);
+	        JBC.genStoreInteger (instr);
 	      //  else mark("; expected");
 		}
 		while (scanner.sym == scanner.STRING) {
@@ -536,25 +576,13 @@ public class Parser {
 	       // scanner.getSym();
 	       // scanner.getSym();
 			//System.out.println(scanner.sym);
+	        JBC.loadConstant(instr, 4);
+	        JBC.astore(instr);
 		}
 		if (scanner.sym == scanner.SPL || scanner.sym == scanner.SP) {
 			if (scanner.sym == scanner.SPL) {
-				write ("System.out.println");
-				scanner.getSym();
-				if (scanner.sym == scanner.LPAREN) {
-					write ("(");;
-					scanner.getSym();
-					scanner.getSym();
-					if (scanner.sym == scanner.RPAREN) {
-						write (")");
-						scanner.getSym();
-						if (scanner.sym == scanner.SEMICOLON) {
-				        		write (";");
-				        		scanner.getSym();
-				        		writeln();
-				        }
-					}
-				}
+
+	   			println();
 			}
 		/*	if (scanner.sym == scanner.SP) {
 				write ("System.out.print");scanner.getSym();
@@ -578,9 +606,13 @@ public class Parser {
 	}
 	
 	public static void Program() throws IOException {
+		 
 		 declarations(0);
 		 Parser x = compoundStatement(1);
 		// writeln();
+		 JBC.progExit(instr);
+		 JBC.progStart(2,7,1);
+		 JBC.writeBytes();
 	}
 	
 	public static void compileString(FileInputStream file) throws IOException {

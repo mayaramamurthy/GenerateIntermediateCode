@@ -1,0 +1,41 @@
+Compiled from "HelloWorld.java"
+public class HelloWorld {
+  public HelloWorld();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: iconst_5
+       1: istore_1
+       2: ldc2_w        #2                  // double 11.1d
+       5: dstore_2
+       6: ldc           #4                  // String Hello World
+       8: astore        4
+      10: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      13: ldc           #6                  // String Hello
+      15: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      18: iload_1
+      19: iconst_5
+      20: if_icmpne     34
+      23: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      26: ldc           #8                  // String It's 5
+      28: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      31: goto          42
+      34: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      37: ldc           #9                  // String It's not 5
+      39: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      42: iconst_0
+      43: istore        5
+      45: iload         5
+      47: bipush        10
+      49: if_icmpge     66
+      52: getstatic     #5                  // Field java/lang/System.out:Ljava/io/PrintStream;
+      55: ldc           #10                 // String For loop iteration
+      57: invokevirtual #7                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+      60: iinc          5, 1
+      63: goto          45
+      66: return
+}
