@@ -11,6 +11,7 @@ public class Parser {
 	static char indent = '	';
 	static int instr = 0;
 	static int label;
+	static int boolValue = 0;
 	
 	
 	static ArrayList<Integer> FIRSTFACTOR = new ArrayList<Integer>();
@@ -234,13 +235,34 @@ public class Parser {
 		int op;
 		while (scanner.sym == scanner.EQ || scanner.sym == scanner.NE || scanner.sym == scanner.EE || scanner.sym == scanner.AA || scanner.sym == scanner.PP || scanner.sym == scanner.LE || scanner.sym == scanner.LT || scanner.sym == scanner.GE ||scanner.sym == scanner.GT) {
 			op = scanner.sym;
+			scanner.getSym();
 			if (op == scanner.EQ) write(" = ");
 			else if (op == scanner.NE) write("!=");
-			else if (op == scanner.LE) write(" <= ");
-			else if (op == scanner.GT) write(" > ");
-			else if (op == scanner.LT) write(" < ");
-			else if (op == scanner.GE) write(" >= ");
-			else if (op == scanner.EE) write(" == ");
+			else if (op == scanner.LE) {
+				write(" <= ");
+				JBC.genInt(instr, scanner.currNumber);
+				JBC.genIFCMPGT(instr, 62);
+			}
+			else if (op == scanner.GT) {
+				write(" > ");
+				JBC.genInt(instr, scanner.currNumber);
+				JBC.genIFCMPLE(instr, 62);
+			}
+			else if (op == scanner.LT) {
+				write(" < ");
+				//JBC.genInt(instr, scanner.currNumber); // refer to ST value
+				JBC.genIFCMPGE(instr, 62);
+			}
+			else if (op == scanner.GE) {
+				write(" >= ");
+				JBC.genInt(instr, scanner.currNumber);
+				JBC.genIFCMPLT(instr, 62);
+			}
+			else if (op == scanner.EE) {
+				write(" == ");
+				JBC.genInt(instr, scanner.currNumber); // refer to ST value
+				JBC.genIFCMPNE(instr, 62);
+			}
 			else if (op == scanner.PP) {
 				write(" ++ ");
 				scanner.currNumber = 1;
@@ -249,7 +271,6 @@ public class Parser {
 				write(" -- ");
 				scanner.currNumber = -1;
 			}
-			scanner.getSym();
 			Parser y = expression();
 			
 	
@@ -277,7 +298,7 @@ public class Parser {
 	public static Parser statement (int l) throws IOException {
 		Parser x = null, y;
 		x.typ = scanner.sym;
-		if (scanner.sym == scanner.IF) {
+		while (scanner.sym == scanner.IF) {
 		        writeln(); 
 		        System.out.print("if ");
 		        scanner.getSym(); 
@@ -288,9 +309,9 @@ public class Parser {
 		        		write (scanner.str);
 		        		scanner.getSym(); 
 			        x = expression();
-			        JBC.genInt(instr, scanner.currNumber);
-			        JBC.genIFCMPNE(instr, 37);
-			        JBC.genGoTo(instr, 45);
+			      //  JBC.genInt(instr, scanner.currNumber);
+			       // JBC.genIFCMPNE(instr, 37);
+			        //
 			        if (scanner.sym == scanner.RPAREN) {
 			        		write (")");
 			        		scanner.getSym(); 
@@ -299,6 +320,7 @@ public class Parser {
 				        		scanner.getSym();
 				        		if (scanner.sym == scanner.SPL) {
 				        			println();
+				        			JBC.genGoTo(instr, 45);
 				        		}
 				        		if (scanner.sym == scanner.RANGB) {
 				        			write ("}");
@@ -344,10 +366,10 @@ public class Parser {
 				JBC.genILoad(instr, 4);	// need to fix this so it knows to pull the load from ST value
 				write(scanner.str);
 				scanner.getSym();
+				scanner.currNumber = boolValue;
 				x = expression();
-				JBC.genInt(instr, 1); // refer to ST value
-				JBC.genIFCMPNE(instr, 62);
-				JBC.genGoTo(instr, 45);
+				
+				//
 				if (scanner.sym == scanner.RPAREN) {
 					write (")");
 					scanner.getSym();
@@ -356,6 +378,7 @@ public class Parser {
 				   		scanner.getSym();
 				   		if (scanner.sym == scanner.SPL) {
 				   			println();
+				   			JBC.genGoTo(instr, 45);
 				   			
 				   		}
 						if (scanner.sym ==  scanner.RANGB) {
@@ -406,7 +429,7 @@ public class Parser {
 			        		write(scanner.str);
 			        		scanner.getSym();
 			        		expression();
-			        		JBC.genIFCMPNE(instr, 8);
+			        	//	JBC.genIFCMPNE(instr, 8);
 			        		if (scanner.sym == scanner.SEMICOLON) {
 				        		write ("; ");
 				        		scanner.getSym();
@@ -414,7 +437,6 @@ public class Parser {
 					        		write(scanner.str);
 					        		scanner.getSym();
 					        		expression();
-					        		JBC.genIINC(instr, 6, scanner.currNumber); // 6 refers to loaded variable
 						        	if (scanner.sym == scanner.RPAREN) {
 						        		write (")");
 						        		scanner.getSym();
@@ -423,6 +445,8 @@ public class Parser {
 						        			scanner.getSym();
 						        			if (scanner.sym == scanner.SPL) {
 						        				println();
+
+								        		JBC.genIINC(instr, 6, scanner.currNumber); // 6 refers to loaded variable
 						        			}
 						        			JBC.genGoTo(instr, 65); 	// return to top of loop
 						        			if (scanner.sym == scanner.RANGB) {
@@ -468,7 +492,7 @@ public class Parser {
 	        		scanner.getSym();
 	        }
 	        else mark("; expected");
-	        JBC.genInt(instr, scanner.val);
+	        JBC.genInt(instr, scanner.currNumber);
 	        JBC.genStoreInteger (instr);
 		}
 		while (scanner.sym == scanner.DOUBLE) {
@@ -520,7 +544,6 @@ public class Parser {
 		if (scanner.sym == scanner.BOOLEAN) {
 			writeln(); write( "boolean ");
 	        scanner.getSym();
-	        int boolValue = 0;
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
     				write(scanner.str);
@@ -633,6 +656,9 @@ public class Parser {
 		// TODO Auto-generated method stub
 		FileInputStream file = new FileInputStream ("HelloWorld.java");
 		compileString(file);
+		
+		FileInputStream file1 = new FileInputStream ("Example2.java");
+	//	compileString(file1);
 	
 
 	}

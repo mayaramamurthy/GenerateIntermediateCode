@@ -135,4 +135,24 @@ public class genByteCode {
 		
 	}
 
+	public void genIFCMPGT(int instr, int label) {
+		putByte ("\t\t" + instr + ":" + " if_icmpgt" + "\t\t" + label);
+		
+	}
+
+	public void genIFCMPLT(int instr, int label) {
+		putByte ("\t\t" + instr + ":" + " if_icmplt" + "\t\t" + label);
+		
+	}
+
+	public void genIFCMPGE(int instr, int label) {
+		putByte ("\t\t" + instr + ":" + " if_icmpge" + "\t\t" + label);
+		
+	}
+
+	public void genIFCMPLE(int instr, int label) {
+		putByte ("\t\t" + instr + ":" + " if_icmple" + "\t\t" + label);
+		
+	}
+
 }

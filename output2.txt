@@ -1,0 +1,103 @@
+Classfile /Users/mayaramamurthy/Documents/School/University/Fourth Year/Term 2/CS 4TB3/Final Project/Source Code/Prototype/Example2.class
+  Last modified 25-Mar-2018; size 566 bytes
+  MD5 checksum 51a2138dfbd5c60bd44b2d2318c6ba77
+  Compiled from "Example2.java"
+public class Example2
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #8.#18         // java/lang/Object."<init>":()V
+   #2 = Fieldref           #19.#20        // java/lang/System.out:Ljava/io/PrintStream;
+   #3 = String             #21            // It's less than 5
+   #4 = Methodref          #22.#23        // java/io/PrintStream.println:(Ljava/lang/String;)V
+   #5 = String             #24            // It's not 5
+   #6 = String             #25            // For loop iteration
+   #7 = Class              #26            // Example2
+   #8 = Class              #27            // java/lang/Object
+   #9 = Utf8               <init>
+  #10 = Utf8               ()V
+  #11 = Utf8               Code
+  #12 = Utf8               LineNumberTable
+  #13 = Utf8               main
+  #14 = Utf8               ([Ljava/lang/String;)V
+  #15 = Utf8               StackMapTable
+  #16 = Utf8               SourceFile
+  #17 = Utf8               Example2.java
+  #18 = NameAndType        #9:#10         // "<init>":()V
+  #19 = Class              #28            // java/lang/System
+  #20 = NameAndType        #29:#30        // out:Ljava/io/PrintStream;
+  #21 = Utf8               It's less than 5
+  #22 = Class              #31            // java/io/PrintStream
+  #23 = NameAndType        #32:#33        // println:(Ljava/lang/String;)V
+  #24 = Utf8               It's not 5
+  #25 = Utf8               For loop iteration
+  #26 = Utf8               Example2
+  #27 = Utf8               java/lang/Object
+  #28 = Utf8               java/lang/System
+  #29 = Utf8               out
+  #30 = Utf8               Ljava/io/PrintStream;
+  #31 = Utf8               java/io/PrintStream
+  #32 = Utf8               println
+  #33 = Utf8               (Ljava/lang/String;)V
+{
+  public Example2();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 1: 0
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=3, args_size=1
+         0: iconst_4
+         1: istore_1
+         2: iload_1
+         3: iconst_5
+         4: if_icmpgt     18
+         7: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        10: ldc           #3                  // String It's less than 5
+        12: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        15: goto          26
+        18: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        21: ldc           #5                  // String It's not 5
+        23: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        26: bipush        10
+        28: istore_2
+        29: iload_2
+        30: iconst_1
+        31: if_icmple     48
+        34: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        37: ldc           #6                  // String For loop iteration
+        39: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        42: iinc          2, -1
+        45: goto          29
+        48: return
+      LineNumberTable:
+        line 4: 0
+        line 6: 2
+        line 7: 7
+        line 10: 18
+        line 13: 26
+        line 14: 34
+        line 13: 42
+        line 16: 48
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 18
+          locals = [ int ]
+        frame_type = 7 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+        frame_type = 250 /* chop */
+          offset_delta = 18
+}
+SourceFile: "Example2.java"
