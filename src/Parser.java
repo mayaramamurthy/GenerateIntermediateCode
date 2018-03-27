@@ -476,7 +476,8 @@ public class Parser {
 			writeln(); write("int ");
 	        scanner.getSym();
 	        if (scanner.sym == scanner.IDENT) {
-	            ident = scanner.val; 
+	            ident = scanner.val;
+	            String vName = scanner.str;
         			write(scanner.str);
 	            scanner.getSym();
 	            if (scanner.sym == scanner.EQUALS || scanner.sym == scanner.EQ) {
@@ -484,6 +485,8 @@ public class Parser {
 	            		scanner.getSym();
 	            }
 	            else mark("= expected");
+				SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,
+						SymbolTable.JObjectType.INT,vName,null);
 	            x = expression();
 	        }
 	        else mark("variable name expected");
@@ -629,7 +632,8 @@ public class Parser {
 	}
 	
 	public static void Program() throws IOException {
-		 
+
+		SymbolTable.init();
 		 declarations(0);
 		 Parser x = compoundStatement(1);
 		// writeln();

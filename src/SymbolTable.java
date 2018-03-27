@@ -6,7 +6,7 @@ public class SymbolTable {
 
     public enum JObjectClass{
         EXPRESSION,CONDITIONAL,HEAD,VARIABLE,GUARD,
-        FUNCTION, REFERENCE
+        FUNCTION, REFERENCE,EMPTY
     }
 
     public enum JObjectType{
@@ -28,16 +28,53 @@ public class SymbolTable {
         current = root;
     }
 
-    public static void addObject(JObjectClass cls, JObjectType type, String name, Object value){
+    public static boolean addObject(JObjectClass cls, JObjectType type, String name, Object value){
         JObject obj = new JObject();
+        boolean wasEmpty = false;
+        if(current.cls == JObjectClass.EMPTY){
+            obj = current;
+            wasEmpty = true;
+        }
+        if(current.cls == JObjectClass.REFERENCE){
+            if(find(name) == null){
+                System.err.println("Variable " + name + " not defined!");
+                return false;
+            }
+        }
         obj.cls = cls;
         obj.type = type;
         obj.name = name;
         obj.value = value;
         obj.next = guard;
+        if(!wasEmpty) {
+            obj.asc = current.asc;
+            current.next = obj;
+        }
+        return true;
+    }
 
-        current.next = obj;
-        obj = current;
+    public static Expression appendExpression(Object value, JObjectType type,JObjectOperator op){
+        if(current.type == JObjectType.EXPRESSION){
+            if(current.value == null){
+                Expression expr = new Expression();
+                expr.op = op;
+                expr.type = type;
+                expr.value = value;
+                expr.next = null;
+                return expr;
+            }
+            Expression expr = (Expression)current.value;
+            while(expr.next != null){
+                expr = expr.next;
+            }
+            Expression e = new Expression();
+            e.op = op;
+            e.type = type;
+            e.value = value;
+            expr.next = e;
+            return e;
+        }
+        return null;
     }
 
     public static JObject find(String varName){
@@ -55,11 +92,21 @@ public class SymbolTable {
     }
 
     public static void openScope(){
-
+        current.desc = new JObject();
+        current.desc.asc = current;
+        current = current.desc;
+        current.cls = JObjectClass.EMPTY;
     }
 
-    public static void currentScope(){
+    public static void closeScope(){
+        current = current.asc;
+    }
 
+    public static JObject currentScope(){
+        if(current.asc != null){
+            return current.asc.desc;
+        }
+        return root;
     }
 
     public static class JObject{
