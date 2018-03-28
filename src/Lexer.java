@@ -63,7 +63,7 @@ public class Lexer {
 		    String num = "";
 		   // val = Character.getNumericValue(ch);
 		    while (Character.isDigit(ch) || ch == '.') {
-			    System.out.print(ch);
+			   // System.out.print(ch);
 			    if (ch != '.') {
 			    		val = (10 * val) + Character.getNumericValue(ch);
 			    }
@@ -121,10 +121,10 @@ public class Lexer {
 	public static void readString() throws IOException {
 		getChar();
 	    while (ch != '"') {
-	    		System.out.print(String.valueOf(ch));
+	    		//System.out.print(String.valueOf(ch));
 	    		getChar();
 	    }
-	    System.out.print(ch);
+	   // System.out.print(ch);
 	    getChar();
 	 //   getSym();
 	}
@@ -145,7 +145,7 @@ public class Lexer {
 	    		getSym();//System.out.println(ch);
 	    }
 	    else if (ch == '"') { 
-	    		System.out.print(ch);
+	    		//System.out.print(ch);
     			readString();
     			//getSym();
 	    }
