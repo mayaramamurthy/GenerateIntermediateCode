@@ -46,14 +46,14 @@ public class Parser {
 	    }
 	 
 	public static void write (char y) {
-		System.out.print(y);
+	//	System.out.print(y);
 	}	 
 	public static void write (String y) {
-		System.out.print(y);
+	//	System.out.print(y);
 	}
 
 	public static void writeln() {
-		System.out.println("");
+	//	System.out.println("");
 	}
 	public static void mark(String s) {
 		System.out.println(s);
@@ -114,7 +114,7 @@ public class Parser {
 		}
 		if (scanner.sym == scanner.TRUE || scanner.sym == scanner.FALSE) {
 			String key = getKey(scanner.sym);
-			System.out.print(scanner.str); 
+			write(scanner.str); 
 			scanner.getSym();
 			//System.out.println(scanner.sym);
 			// x = Selector(x);
@@ -300,7 +300,7 @@ public class Parser {
 		x.typ = scanner.sym;
 		while (scanner.sym == scanner.IF) {
 		        writeln(); 
-		        System.out.print("if ");
+		        write("if ");
 		        scanner.getSym(); 
 		        if (scanner.sym == scanner.LPAREN) {
 			        write("( ");
@@ -486,7 +486,8 @@ public class Parser {
 	            }
 	            else mark("= expected");
 				SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,
-						SymbolTable.JObjectType.INT,vName,null);
+						SymbolTable.JObjectType.INT,vName,JBC.store);
+				System.out.println(SymbolTable.find(vName));
 	            x = expression();
 	        }
 	        else mark("variable name expected");
@@ -528,7 +529,7 @@ public class Parser {
 	        scanner.getSym();
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
-	            System.out.print(scanner.str);
+	            write(scanner.str);
 	            scanner.getSym();
 	            if (scanner.sym == scanner.EQUALS) {
 	            		write(" = ");
