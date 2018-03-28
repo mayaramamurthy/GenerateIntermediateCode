@@ -12,7 +12,7 @@ public class Parser {
 	static int instr = 0;
 	static int label;
 	static int boolValue = 0;
-	
+	static String variableName = "";
 	
 	static ArrayList<Integer> FIRSTFACTOR = new ArrayList<Integer>();
 	static ArrayList<Integer> FOLLOWFACTOR = new ArrayList<Integer>();
@@ -305,7 +305,8 @@ public class Parser {
 		        if (scanner.sym == scanner.LPAREN) {
 			        write("( ");
 		        		scanner.getSym(); 
-		        		JBC.genILoad(instr, 1);	// need to fix this so it knows to pull the load from ST value
+		        		variableName = scanner.str;
+		        		JBC.genILoad(instr, (int)SymbolTable.find(variableName).value);	// need to fix this so it knows to pull the load from ST value
 		        		write (scanner.str);
 		        		scanner.getSym(); 
 			        x = expression();
@@ -363,7 +364,8 @@ public class Parser {
 			if (scanner.sym == scanner.LPAREN) {
 				write ("(");
 				scanner.getSym(); 
-				JBC.genILoad(instr, 4);	// need to fix this so it knows to pull the load from ST value
+				variableName = scanner.str;
+				JBC.genILoad(instr, (int)SymbolTable.find(variableName).value);	// need to fix this so it knows to pull the load from ST value
 				write(scanner.str);
 				scanner.getSym();
 				scanner.currNumber = boolValue;
@@ -407,13 +409,16 @@ public class Parser {
 			        if (scanner.sym == scanner.IDENT) {
 			            ident = scanner.val; 
 		        			write(scanner.str);
+		        			variableName = scanner.str;
 			            scanner.getSym();
 			            if (scanner.sym == scanner.EQUALS || scanner.sym == scanner.EQ) {
 			            		write(" = ");
 			            		scanner.getSym();
+			            		System.out.println(variableName);
+			            		SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,SymbolTable.JObjectType.INT, variableName, JBC.store);
 			            		JBC.genInt(instr, scanner.val);
 			            		JBC.genStoreInteger(instr);
-			            		JBC.genILoad(instr, 6);	// six needs to be reliant on byte just pushed
+			    				JBC.genILoad(instr, (int)SymbolTable.find(variableName).value);
 			            		JBC.genBipush (instr, 10);
 			            }
 			            else mark("= expected");
@@ -427,6 +432,7 @@ public class Parser {
 			        else mark("; expected");
 			        if (scanner.sym == scanner.IDENT) {
 			        		write(scanner.str);
+			        		variableName = scanner.str;
 			        		scanner.getSym();
 			        		expression();
 			        	//	JBC.genIFCMPNE(instr, 8);
@@ -446,7 +452,7 @@ public class Parser {
 						        			if (scanner.sym == scanner.SPL) {
 						        				println();
 
-								        		JBC.genIINC(instr, 6, scanner.currNumber); // 6 refers to loaded variable
+								        		JBC.genIINC(instr, (int)SymbolTable.find(variableName).value, scanner.currNumber); // 6 refers to loaded variable
 						        			}
 						        			JBC.genGoTo(instr, 65); 	// return to top of loop
 						        			if (scanner.sym == scanner.RANGB) {
@@ -504,6 +510,7 @@ public class Parser {
 	        scanner.getSym();
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
+	            variableName = scanner.str;
     				write(scanner.str);
 	            scanner.getSym();
 	            if (scanner.sym == scanner.EQUALS) {
@@ -511,6 +518,9 @@ public class Parser {
 	            		scanner.getSym();
 	            }
 	            else mark("= expected");
+
+				SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,
+						SymbolTable.JObjectType.DOUBLE,variableName,JBC.store);
 	            x = expression();
 	            //scanner.getSym();
 	        }
@@ -529,13 +539,16 @@ public class Parser {
 	        scanner.getSym();
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
+	            variableName = scanner.str;
 	            write(scanner.str);
 	            scanner.getSym();
 	            if (scanner.sym == scanner.EQUALS) {
 	            		write(" = ");
 	            		scanner.getSym();
 	            }
+	            
 	            else mark("= expected");
+	            SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE, SymbolTable.JObjectType.FLOAT, variableName, JBC.store);
 	            x = expression();
 	        }
 	        else mark("variable name expected");
@@ -551,6 +564,7 @@ public class Parser {
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
     				write(scanner.str);
+    				variableName = scanner.str;
 	            scanner.getSym();
 	            if (scanner.sym == scanner.EQUALS) {
 	            		write(" = ");
@@ -567,6 +581,7 @@ public class Parser {
 	            else {
 	            		mark ("Invalid type");
 	            }
+	            SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE, SymbolTable.JObjectType.BOOLEAN, variableName, JBC.store);
 	            scanner.getSym();
 	        }
 	        else mark("variable name expected");
@@ -575,7 +590,7 @@ public class Parser {
 	        		scanner.getSym();
 	        }
 	        JBC.genBoolean(instr, boolValue);
-	        JBC.genStoreInteger (instr);
+	        
 	      //  else mark("; expected");
 		}
 		while (scanner.sym == scanner.STRING) {
@@ -584,6 +599,7 @@ public class Parser {
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
     				write(scanner.str);
+    				variableName = scanner.str;
 	            scanner.getSym();
 	            if (scanner.sym == scanner.EQUALS) {
 	            		write(" = ");
@@ -592,6 +608,7 @@ public class Parser {
 	            else mark("= expected");
 	           scanner.getSym();
 	           // x = expression();
+	           SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE, SymbolTable.JObjectType.STRING, variableName, JBC.store);
 	        }
 	        else mark("variable name expected");
 	        if (scanner.sym == scanner.SEMICOLON) {
@@ -599,11 +616,13 @@ public class Parser {
 	        		scanner.getSym();
 	        		writeln();
 	        }
+	        
 	      //  else mark("; expected");
 	       // scanner.getSym();
 	       // scanner.getSym();
 			//System.out.println(scanner.sym);
-	        JBC.loadConstant(instr, 4);
+	        JBC.genStoreInteger (instr);
+	        JBC.loadConstant(instr,  (int)SymbolTable.find(variableName).value);
 	        JBC.astore(instr);
 		}
 		if (scanner.sym == scanner.SPL || scanner.sym == scanner.SP) {
@@ -611,23 +630,7 @@ public class Parser {
 
 	   			println();
 			}
-		/*	if (scanner.sym == scanner.SP) {
-				write ("System.out.print");scanner.getSym();
-				if (scanner.sym == scanner.LPAREN) {
-					write ("(");
-					scanner.getChar();
-					scanner.getSym();
-					scanner.getSym();
-					if (scanner.sym == scanner.RPAREN) {
-						write (")");
-						scanner.getSym();
-						if (scanner.sym == scanner.SEMICOLON) {
-				        		write (";");
-				        		scanner.getSym();
-				        }
-					}
-				}
-			}*/
+
 
 		}
 	}
@@ -662,7 +665,7 @@ public class Parser {
 		FileInputStream file = new FileInputStream ("HelloWorld.java");
 		compileString(file);
 		
-		FileInputStream file1 = new FileInputStream ("Example2.java");
+	//	FileInputStream file1 = new FileInputStream ("Example2.java");
 	//	compileString(file1);
 	
 

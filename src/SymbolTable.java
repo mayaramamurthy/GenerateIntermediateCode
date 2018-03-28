@@ -3,7 +3,6 @@ public class SymbolTable {
     static JObject root;
     static JObject guard;
     static JObject current;
-
     public enum JObjectClass{
         EXPRESSION,CONDITIONAL,HEAD,VARIABLE,GUARD,
         FUNCTION, REFERENCE,EMPTY
