@@ -82,14 +82,14 @@ public class SymbolTable {
         return find(root,varName);
     }
 
-    private static JObject find(JObject current, String varName){
-        if(current == guard || current == null) return null;
-        if(current.name.equals(varName))return current;
-        JObject dsc = find(current.desc,varName);
+    private static JObject find(JObject node, String varName){
+        if(node == null || node.cls == JObjectClass.GUARD) return null;
+        if(node.name != null && node.name.equals(varName) && node.cls == JObjectClass.VARIABLE)return node;
+        JObject dsc = find(node.desc,varName);
         if(dsc != null){
             return dsc;
         }
-        return find(current.next,varName);
+        return find(node.next,varName);
     }
 
     public static void openScope(){

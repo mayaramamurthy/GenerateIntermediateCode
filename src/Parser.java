@@ -487,7 +487,7 @@ public class Parser {
 	            else mark("= expected");
 				SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,
 						SymbolTable.JObjectType.INT,vName,JBC.store);
-				System.out.println(SymbolTable.find(vName));
+				System.out.println(SymbolTable.find(vName).value);
 	            x = expression();
 	        }
 	        else mark("variable name expected");
