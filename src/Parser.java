@@ -241,22 +241,22 @@ public class Parser {
 			else if (op == scanner.LE) {
 				write(" <= ");
 				JBC.genInt(instr, scanner.currNumber);
-				JBC.genIFCMPGT(instr, 62);
+				JBC.genIFCMPGT(instr, 61);
 			}
 			else if (op == scanner.GT) {
 				write(" > ");
 				JBC.genInt(instr, scanner.currNumber);
-				JBC.genIFCMPLE(instr, 62);
+				JBC.genIFCMPLE(instr, 61);
 			}
 			else if (op == scanner.LT) {
 				write(" < ");
 				//JBC.genInt(instr, scanner.currNumber); // refer to ST value
-				JBC.genIFCMPGE(instr, 62);
+				JBC.genIFCMPGE(instr, 134);
 			}
 			else if (op == scanner.GE) {
 				write(" >= ");
 				JBC.genInt(instr, scanner.currNumber);
-				JBC.genIFCMPLT(instr, 62);
+				JBC.genIFCMPLT(instr, 85);
 			}
 			else if (op == scanner.EE) {
 				write(" == ");
@@ -590,7 +590,7 @@ public class Parser {
 	        		scanner.getSym();
 	        }
 	        JBC.genBoolean(instr, boolValue);
-	        
+	        JBC.genStoreInteger (instr);
 	      //  else mark("; expected");
 		}
 		while (scanner.sym == scanner.STRING) {
@@ -621,8 +621,7 @@ public class Parser {
 	       // scanner.getSym();
 	       // scanner.getSym();
 			//System.out.println(scanner.sym);
-	        JBC.genStoreInteger (instr);
-	        JBC.loadConstant(instr,  (int)SymbolTable.find(variableName).value);
+	        JBC.loadConstant(instr, 4);	// Nick this is generated through memory management where #4 refers to the fact that it is a string
 	        JBC.astore(instr);
 		}
 		if (scanner.sym == scanner.SPL || scanner.sym == scanner.SP) {
