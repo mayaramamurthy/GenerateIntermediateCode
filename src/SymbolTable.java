@@ -50,6 +50,7 @@ public class SymbolTable {
             obj.asc = current.asc;
             current.next = obj;
         }
+        current = obj;
         return true;
     }
 
