@@ -17,6 +17,7 @@ public class Lexer {
 	static String str = "";
 	static Integer val = 0;
 	static int currNumber = 0;
+	static double currDouble = 0.0;
 	static genByteCode JBC = new genByteCode();
 	static Parser p0 = new Parser();
 	static char ch;
@@ -64,19 +65,23 @@ public class Lexer {
 		   // val = Character.getNumericValue(ch);
 		    while (Character.isDigit(ch) || ch == '.') {
 			   // System.out.print(ch);
-			    if (ch != '.') {
-			    		val = (10 * val) + Character.getNumericValue(ch);
-			    }
-			    num += ch;
+			   // if (ch != '.') {
+			    		//val = (10 * val) + Character.getNumericValue(ch);
+			    		num += ch;
+			   // }
+			  //  num += ch;
 		        //System.out.println(val);
 		        getChar();	        
 		        currNumber = val;
 		    }
-		  //  System.out.print(val);
-		 //   if (num.contains(".")) {
-		   // 		val = Double.parseDouble(num);
-		    //}
-		 //   val = Integer.parseInt(num);
+		   // System.out.print(num);
+		    if (num.contains(".")) {
+		    		currDouble = Double.parseDouble(num);
+		    }
+		    else {
+		    		val = Integer.parseInt(num);
+		    		currNumber = val;
+		    }
 		 //  
 		   // getChar();	
 		  //  sym = NUMBER;

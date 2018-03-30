@@ -106,7 +106,7 @@ public class genByteCode {
 
 	public void loadString(String value){
 		instr = instr + 1;
-		putByte ("\t\t" + instr + ":" + " ldc" + "\t\t\"" + value+"\"");
+		putByte ("\t\t" + instr + ":" + " ldc" + "\t\t\t" + value+"\"");
 	}
 
 	public void astore() {
@@ -203,7 +203,7 @@ public class genByteCode {
 
 	public void genIFCMPGE(int label) {
 		instr = instr + 2;
-		putByte ("\t\t" + instr + ":" + " if_icmpge" + "\t\t" + label);
+		putByte ("\t\t" + instr + ":" + " if_icmpge" + "\t\t" + (instr + 14 + label));
 		instr = instr + 1;
 	}
 

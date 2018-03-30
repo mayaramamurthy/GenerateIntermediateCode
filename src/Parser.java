@@ -252,7 +252,7 @@ public class Parser {
 			else if (op == scanner.LT) {
 				write(" < ");
 				//JBC.genInt(instr, scanner.currNumber); // refer to ST value
-				JBC.genIFCMPGE( 134);
+				JBC.genIFCMPGE(3);
 			}
 			else if (op == scanner.GE) {
 				write(" >= ");
@@ -379,7 +379,7 @@ public class Parser {
 				   		scanner.getSym();
 				   		if (scanner.sym == scanner.SPL) {
 				   			println();
-				   			JBC.genGoTo( 45);
+				   			JBC.genGoTo(JBC.instr-9);
 				   			
 				   		}
 						if (scanner.sym ==  scanner.RANGB) {
@@ -396,6 +396,8 @@ public class Parser {
 			}
 		}
 		if (scanner.sym == scanner.FOR) {
+
+			int currInstr = 0;
 			writeln();
 			write( "for ");
 			scanner.getSym();
@@ -413,10 +415,10 @@ public class Parser {
 			            if (scanner.sym == scanner.EQUALS || scanner.sym == scanner.EQ) {
 			            		write(" = ");
 			            		scanner.getSym();
-			            		System.out.println(variableName);
 			            		SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,SymbolTable.JObjectType.INT, variableName, JBC.store);
 			            		JBC.genInt( scanner.val);
 			            		JBC.genStoreInteger();
+			            		currInstr = JBC.instr;
 			    				JBC.genILoad( (int)SymbolTable.find(variableName).value);
 			            		JBC.genBipush ( 10);
 			            }
@@ -453,7 +455,7 @@ public class Parser {
 
 								        		JBC.genIINC( (int)SymbolTable.find(variableName).value, scanner.currNumber); // 6 refers to loaded variable
 						        			}
-						        			JBC.genGoTo( 65); 	// return to top of loop
+						        			JBC.genGoTo(currInstr); 	// return to top of loop
 						        			if (scanner.sym == scanner.RANGB) {
 						        				writeln();
 						        				write("}");
@@ -492,7 +494,6 @@ public class Parser {
 	            else mark("= expected");
 				SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,
 						SymbolTable.JObjectType.INT,vName,JBC.store);
-				System.out.println(SymbolTable.find(vName).value);
 	            x = expression();
 	        }
 	        else mark("variable name expected");
@@ -528,10 +529,10 @@ public class Parser {
 	        		write (";");
 	        		scanner.getSym();
 	        }
-	        if(x != null) {
-				JBC.loadDouble2W(x.val+"");
+	    //    if(x != null) {
+				JBC.loadDouble2W(scanner.currDouble+"");
 				JBC.storeDouble();
-			}
+		//	}
 	       // else mark("; expected");
 		}
 
