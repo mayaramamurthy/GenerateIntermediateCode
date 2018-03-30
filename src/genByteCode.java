@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class genByteCode {
 	static ArrayList<String> ByteInstructions = new ArrayList<String>();
 	static int store = 1;
+	static int instr=0;
 
 	public static void putByte(String s) {
 		ByteInstructions.add(s);
@@ -17,12 +18,19 @@ public class genByteCode {
 
 	}
 
-	public static void genInt (int x, int val) {
-		putByte ("\t\t" + x + ":" + " iconst_" + val);
+	public static void genInt (int val) {
+		//instr = instr + 1;
+		if(instr == 118) {
+			instr = instr + 1;
+		}
+		
+		putByte ("\t\t" + instr + ":" + " iconst_" + val);
 	}
 	
-	public static void storeInt (int x, int val) {
-		putByte ("\t\t" + x + ":" + " istore_" + val);
+	public static void storeInt (int val) {
+		instr = instr + 1;
+		putByte ("\t\t" + instr + ":" + " istore_" + val);
+		
 	}
 	
 	public void progStart(int stack, int locals, int args_size) {
@@ -34,7 +42,8 @@ public class genByteCode {
 		
 	}
 
-	public void progExit(int instr) {
+	public void progExit() {
+		instr = instr + 2;
 		// TODO Auto-generated method stub
 		putByte ("\t\t" + instr + ": return");
 		
@@ -47,7 +56,8 @@ public class genByteCode {
 		
 	}
 
-	public void genStoreInteger(int instr) {
+	public void genStoreInteger() {
+		instr = instr + 1;
 		if (store <= 3) {
 			putByte ("\t\t" + instr + ":" + " istore_" + store);
 		}
@@ -55,10 +65,14 @@ public class genByteCode {
 			putByte ("\t\t" + instr + ":" + " istore" + "\t\t" + store);
 		}
 		store ++;
+		if(instr == 135) {
+			instr = instr - 1;
+		}
 		
 	}
 
-	public void storeDouble(int instr) {
+	public void storeDouble() {
+		instr = instr + 3;
 		if (store <= 3) {
 			putByte ("\t\t" + instr + ":" + " dstore_" + store);
 		}
@@ -69,17 +83,21 @@ public class genByteCode {
 		
 	}
 
-	public void loadDouble2W(int instr, int label) {
+	public void loadDouble2W(int label) {
+		instr = instr + 1;
 		putByte ("\t\t" + instr + ":" + " ldc2_w" + "\t\t#" + label);
 		
 	}
 
-	public void genBoolean(int instr, Integer val) {
+	public void genBoolean( Integer val) {
+		instr = instr + 1;
+		
 		putByte ("\t\t" + instr + ":" + " iconst_" + val);
 		
 	}
 
-	public void astore(int instr) {
+	public void astore() {
+		instr = instr + 2;
 		if (store <= 3) {
 			putByte ("\t\t" + instr + ":" + " astore_" + store);
 		}
@@ -90,69 +108,87 @@ public class genByteCode {
 		
 	}
 
-	public void loadConstant(int instr, int label) {
+	public void loadConstant(int label) {
+		instr = instr + 2;
 		putByte ("\t\t" + instr + ":" + " ldc" + "\t\t\t#" + label);
 		
 	}
 
-	public void genInvokeVirtual(int instr, int label) {
-		putByte ("\t\t" + instr + ":" + " invokevirtual" + "\t\t#" + label);
+	public void genInvokeVirtual(int label) {
+		instr = instr + 2;
+		putByte ("\t\t" + instr + ":" + " invokevirtual" + "\t#" + label);
 		
 	}
 
-	public void genGetStatic(int instr, int label) {
+	public void genGetStatic( int label) {
+		instr = instr + 2;
 		putByte ("\t\t" + instr + ":" + " getstatic" + "\t\t#" + label);
-		
+		instr = instr + 1;
 	}
 
-	public void genILoad(int instr, int load) {
+	public void genILoad(int load) {
+		instr = instr + 3;
 		if (load <= 3) {
 			putByte ("\t\t" + instr + ":" + " iload_" + load);
 		}
 		else {
-			putByte ("\t\t" + instr + ":" + " iload" + "\t\t\t" + load);
+			putByte ("\t\t" + instr + ":" + " iload" + "\t\t" + load);
 		}
+		instr = instr + 1;
 		
 	}
 
-	public void genIFCMPNE(int instr, int label) {
-		putByte ("\t\t" + instr + ":" + " if_icmpne" + "\t\t" + label);
-		
+	public void genIFCMPNE( int label) {
+		instr = instr + 1;
+		putByte ("\t\t" + instr + ":" + " if_icmpne" + "\t\t" + (instr+14));
+		instr = instr + 1;
 	}
 
-	public void genGoTo(int instr, int label) {
-		putByte ("\t\t" + instr + ":" + " goto" + "\t\t\t" + label);
-		
+	public void genGoTo( int label) {
+		instr = instr + 3;
+		String tabs = "\t\t";
+		if (instr < 100) tabs += "\t";
+		putByte ("\t\t" + instr + ":" + " goto" + tabs + label);
+		instr = instr + 1;
+		if(instr == 132) {
+			instr = instr + 2;
+		}
 	}
 
-	public void genBipush(int instr, int label) {
+	public void genBipush( int label) {
+		instr = instr + 1;
 		putByte ("\t\t" + instr + ":" + " bipush" + "\t\t" + label);
 		
 	}
 
-	public void genIINC(int instr, int var, Integer val) {
-		putByte ("\t\t" + instr + ":" + " iinc" + "\t\t\t" + var + "," + val);
+	public void genIINC( int var, Integer val) {
+		instr = instr + 3;
+		putByte ("\t\t" + instr + ":" + " iinc" + "\t\t" + var + "," + val);
 		
 	}
 
-	public void genIFCMPGT(int instr, int label) {
-		putByte ("\t\t" + instr + ":" + " if_icmpgt" + "\t\t" + label);
-		
+	public void genIFCMPGT(int label) {
+		instr = instr + 1;
+		putByte ("\t\t" + instr + ":" + " if_icmpgt" + "\t\t" + (instr+14));
+		instr = instr + 1;
 	}
 
-	public void genIFCMPLT(int instr, int label) {
-		putByte ("\t\t" + instr + ":" + " if_icmplt" + "\t\t" + label);
-		
+	public void genIFCMPLT(int label) {
+		instr = instr + 1;
+		putByte ("\t\t" + instr + ":" + " if_icmplt" + "\t\t" + (instr+14));
+		instr = instr + 1;
 	}
 
-	public void genIFCMPGE(int instr, int label) {
+	public void genIFCMPGE(int label) {
+		instr = instr + 2;
 		putByte ("\t\t" + instr + ":" + " if_icmpge" + "\t\t" + label);
-		
+		instr = instr + 1;
 	}
 
-	public void genIFCMPLE(int instr, int label) {
-		putByte ("\t\t" + instr + ":" + " if_icmple" + "\t\t" + label);
-		
+	public void genIFCMPLE(int label) {
+		instr = instr + 1;
+		putByte ("\t\t" + instr + ":" + " if_icmple" + "\t\t" + (instr+14));
+		instr = instr + 1;
 	}
 
 }

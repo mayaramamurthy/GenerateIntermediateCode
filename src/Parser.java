@@ -9,10 +9,11 @@ public class Parser {
 	
 	static int ident = 0, typ = 0, val;
 	static char indent = '	';
-	static int instr = 0;
 	static int label;
 	static int boolValue = 0;
 	static String variableName = "";
+	
+	static int trackInstr = 0;
 	
 	static ArrayList<Integer> FIRSTFACTOR = new ArrayList<Integer>();
 	static ArrayList<Integer> FOLLOWFACTOR = new ArrayList<Integer>();
@@ -210,11 +211,11 @@ public class Parser {
 			scanner.getSym();
 			if (scanner.sym == scanner.LPAREN) {
 				write ("(");
-				JBC.genGetStatic(instr, 5);
+				JBC.genGetStatic(5);
 				scanner.getSym();
-				JBC.loadConstant(instr, 6);
+				JBC.loadConstant(6);
 				scanner.getSym();
-				JBC.genInvokeVirtual(instr, 7);
+				JBC.genInvokeVirtual(7);
 				if (scanner.sym == scanner.RPAREN) {
 					write (")");
 					scanner.getSym();
@@ -240,28 +241,28 @@ public class Parser {
 			else if (op == scanner.NE) write("!=");
 			else if (op == scanner.LE) {
 				write(" <= ");
-				JBC.genInt(instr, scanner.currNumber);
-				JBC.genIFCMPGT(instr, 61);
+				JBC.genInt(scanner.currNumber);
+				JBC.genIFCMPGT(61);
 			}
 			else if (op == scanner.GT) {
 				write(" > ");
-				JBC.genInt(instr, scanner.currNumber);
-				JBC.genIFCMPLE(instr, 61);
+				JBC.genInt(scanner.currNumber);
+				JBC.genIFCMPLE( 61);
 			}
 			else if (op == scanner.LT) {
 				write(" < ");
 				//JBC.genInt(instr, scanner.currNumber); // refer to ST value
-				JBC.genIFCMPGE(instr, 134);
+				JBC.genIFCMPGE( 134);
 			}
 			else if (op == scanner.GE) {
 				write(" >= ");
-				JBC.genInt(instr, scanner.currNumber);
-				JBC.genIFCMPLT(instr, 85);
+				JBC.genInt( scanner.currNumber);
+				JBC.genIFCMPLT( 85);
 			}
 			else if (op == scanner.EE) {
 				write(" == ");
-				JBC.genInt(instr, scanner.currNumber); // refer to ST value
-				JBC.genIFCMPNE(instr, 62);
+				JBC.genInt( scanner.currNumber); // refer to ST value
+				JBC.genIFCMPNE( 62);
 			}
 			else if (op == scanner.PP) {
 				write(" ++ ");
@@ -306,12 +307,10 @@ public class Parser {
 			        write("( ");
 		        		scanner.getSym(); 
 		        		variableName = scanner.str;
-		        		JBC.genILoad(instr, (int)SymbolTable.find(variableName).value);	// need to fix this so it knows to pull the load from ST value
+		        		JBC.genILoad( (int)SymbolTable.find(variableName).value);	
 		        		write (scanner.str);
 		        		scanner.getSym(); 
 			        x = expression();
-			      //  JBC.genInt(instr, scanner.currNumber);
-			       // JBC.genIFCMPNE(instr, 37);
 			        //
 			        if (scanner.sym == scanner.RPAREN) {
 			        		write (")");
@@ -321,7 +320,7 @@ public class Parser {
 				        		scanner.getSym();
 				        		if (scanner.sym == scanner.SPL) {
 				        			println();
-				        			JBC.genGoTo(instr, 45);
+				        			JBC.genGoTo(JBC.instr + 14);
 				        		}
 				        		if (scanner.sym == scanner.RANGB) {
 				        			write ("}");
@@ -365,7 +364,7 @@ public class Parser {
 				write ("(");
 				scanner.getSym(); 
 				variableName = scanner.str;
-				JBC.genILoad(instr, (int)SymbolTable.find(variableName).value);	// need to fix this so it knows to pull the load from ST value
+				JBC.genILoad( (int)SymbolTable.find(variableName).value);	// need to fix this so it knows to pull the load from ST value
 				write(scanner.str);
 				scanner.getSym();
 				scanner.currNumber = boolValue;
@@ -380,7 +379,7 @@ public class Parser {
 				   		scanner.getSym();
 				   		if (scanner.sym == scanner.SPL) {
 				   			println();
-				   			JBC.genGoTo(instr, 45);
+				   			JBC.genGoTo( 45);
 				   			
 				   		}
 						if (scanner.sym ==  scanner.RANGB) {
@@ -416,10 +415,10 @@ public class Parser {
 			            		scanner.getSym();
 			            		System.out.println(variableName);
 			            		SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,SymbolTable.JObjectType.INT, variableName, JBC.store);
-			            		JBC.genInt(instr, scanner.val);
-			            		JBC.genStoreInteger(instr);
-			    				JBC.genILoad(instr, (int)SymbolTable.find(variableName).value);
-			            		JBC.genBipush (instr, 10);
+			            		JBC.genInt( scanner.val);
+			            		JBC.genStoreInteger();
+			    				JBC.genILoad( (int)SymbolTable.find(variableName).value);
+			            		JBC.genBipush ( 10);
 			            }
 			            else mark("= expected");
 			            x = expression();
@@ -452,9 +451,9 @@ public class Parser {
 						        			if (scanner.sym == scanner.SPL) {
 						        				println();
 
-								        		JBC.genIINC(instr, (int)SymbolTable.find(variableName).value, scanner.currNumber); // 6 refers to loaded variable
+								        		JBC.genIINC( (int)SymbolTable.find(variableName).value, scanner.currNumber); // 6 refers to loaded variable
 						        			}
-						        			JBC.genGoTo(instr, 65); 	// return to top of loop
+						        			JBC.genGoTo( 65); 	// return to top of loop
 						        			if (scanner.sym == scanner.RANGB) {
 						        				writeln();
 						        				write("}");
@@ -502,8 +501,8 @@ public class Parser {
 	        		scanner.getSym();
 	        }
 	        else mark("; expected");
-	        JBC.genInt(instr, scanner.currNumber);
-	        JBC.genStoreInteger (instr);
+	        JBC.genInt( scanner.currNumber);
+	        JBC.genStoreInteger ();
 		}
 		while (scanner.sym == scanner.DOUBLE) {
 			writeln(); write("double ");
@@ -529,8 +528,8 @@ public class Parser {
 	        		write (";");
 	        		scanner.getSym();
 	        }
-	        JBC.loadDouble2W (instr, 2);
-	        JBC.storeDouble (instr);
+	        JBC.loadDouble2W ( 2);
+	        JBC.storeDouble ();
 	       // else mark("; expected");
 		}
 
@@ -589,8 +588,8 @@ public class Parser {
 	        		write (";");
 	        		scanner.getSym();
 	        }
-	        JBC.genBoolean(instr, boolValue);
-	        JBC.genStoreInteger (instr);
+	        JBC.genBoolean( boolValue);
+	        JBC.genStoreInteger ();
 	      //  else mark("; expected");
 		}
 		while (scanner.sym == scanner.STRING) {
@@ -621,8 +620,8 @@ public class Parser {
 	       // scanner.getSym();
 	       // scanner.getSym();
 			//System.out.println(scanner.sym);
-	        JBC.loadConstant(instr, 4);	// Nick this is generated through memory management where #4 refers to the fact that it is a string
-	        JBC.astore(instr);
+	        JBC.loadConstant(4);	// Nick this is generated through memory management where #4 refers to the fact that it is a string
+	        JBC.astore();
 		}
 		if (scanner.sym == scanner.SPL || scanner.sym == scanner.SP) {
 			if (scanner.sym == scanner.SPL) {
@@ -640,7 +639,7 @@ public class Parser {
 		 declarations(0);
 		 Parser x = compoundStatement(1);
 		// writeln();
-		 JBC.progExit(instr);
+		 JBC.progExit();
 		 JBC.progStart(2,7,1);
 		 JBC.writeBytes();
 	}
