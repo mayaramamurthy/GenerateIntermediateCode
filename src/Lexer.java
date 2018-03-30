@@ -119,9 +119,11 @@ public class Lexer {
 	}
 	
 	public static void readString() throws IOException {
+		str = "";
 		getChar();
 	    while (ch != '"') {
 	    		//System.out.print(String.valueOf(ch));
+				str += ch;
 	    		getChar();
 	    }
 	   // System.out.print(ch);
@@ -283,6 +285,10 @@ public class Lexer {
 	    		getChar(); 
 	    		sym = LBRAK;
 	    }
+	    else if(ch == '"'){
+	    	readString();
+	    	sym = STRING;
+		}
 	//    else if (ch == chr(0): sym = EOF;
 	    else{
 	    		System.out.println("illegal character: "+ String.valueOf(ch)); 

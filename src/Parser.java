@@ -211,11 +211,11 @@ public class Parser {
 			scanner.getSym();
 			if (scanner.sym == scanner.LPAREN) {
 				write ("(");
-				JBC.genGetStatic(5);
+				JBC.genGetStatic("System.out");
 				scanner.getSym();
-				JBC.loadConstant(6);
+				JBC.loadString(scanner.str);
 				scanner.getSym();
-				JBC.genInvokeVirtual(7);
+				JBC.genInvokeVirtual("java/io/PrintStream.println");
 				if (scanner.sym == scanner.RPAREN) {
 					write (")");
 					scanner.getSym();
@@ -476,7 +476,7 @@ public class Parser {
 
 	
 	public static void declarations (int l) throws IOException {
-		Parser x;
+		Parser x = null;
 		while (scanner.sym == scanner.INT) {
 			writeln(); write("int ");
 	        scanner.getSym();
@@ -528,8 +528,10 @@ public class Parser {
 	        		write (";");
 	        		scanner.getSym();
 	        }
-	        JBC.loadDouble2W ( 2);
-	        JBC.storeDouble ();
+	        if(x != null) {
+				JBC.loadDouble2W(x.val+"");
+				JBC.storeDouble();
+			}
 	       // else mark("; expected");
 		}
 
@@ -594,6 +596,7 @@ public class Parser {
 		}
 		while (scanner.sym == scanner.STRING) {
 			writeln(); write("String ");
+			String strVal = null;
 	        scanner.getSym();
 	        if (scanner.sym == scanner.IDENT) {
 	            ident = scanner.val; 
@@ -606,6 +609,7 @@ public class Parser {
 	            }
 	            else mark("= expected");
 	           scanner.getSym();
+				strVal = scanner.str;
 	           // x = expression();
 	           SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE, SymbolTable.JObjectType.STRING, variableName, JBC.store);
 	        }
@@ -620,7 +624,7 @@ public class Parser {
 	       // scanner.getSym();
 	       // scanner.getSym();
 			//System.out.println(scanner.sym);
-	        JBC.loadConstant(4);	// Nick this is generated through memory management where #4 refers to the fact that it is a string
+	        JBC.loadString(strVal);	// Nick this is generated through memory management where #4 refers to the fact that it is a string
 	        JBC.astore();
 		}
 		if (scanner.sym == scanner.SPL || scanner.sym == scanner.SP) {

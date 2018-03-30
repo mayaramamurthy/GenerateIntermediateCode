@@ -89,11 +89,24 @@ public class genByteCode {
 		
 	}
 
+	public void loadDouble2W(String value){
+		instr = instr + 1;
+		if(!value.endsWith("d")){
+			value += "d";
+		}
+		putByte ("\t\t" + instr + ":" + " ldc2_w" + "\t\t" + value);
+	}
+
 	public void genBoolean( Integer val) {
 		instr = instr + 1;
 		
 		putByte ("\t\t" + instr + ":" + " iconst_" + val);
 		
+	}
+
+	public void loadString(String value){
+		instr = instr + 1;
+		putByte ("\t\t" + instr + ":" + " ldc" + "\t\t\"" + value+"\"");
 	}
 
 	public void astore() {
@@ -117,12 +130,21 @@ public class genByteCode {
 	public void genInvokeVirtual(int label) {
 		instr = instr + 2;
 		putByte ("\t\t" + instr + ":" + " invokevirtual" + "\t#" + label);
-		
+
+	}
+	public void genInvokeVirtual(String method){
+		instr = instr + 2;
+		putByte ("\t\t" + instr + ":" + " invokevirtual" + "\t" + method);
 	}
 
 	public void genGetStatic( int label) {
 		instr = instr + 2;
 		putByte ("\t\t" + instr + ":" + " getstatic" + "\t\t#" + label);
+		instr = instr + 1;
+	}
+	public void genGetStatic( String methodPath){
+		instr = instr + 2;
+		putByte ("\t\t" + instr + ":" + " getstatic" + "\t\t" + methodPath);
 		instr = instr + 1;
 	}
 
