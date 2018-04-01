@@ -31,6 +31,7 @@ public class genByteCode {
 		instr = instr + 1;
 		putByte ("\t\t" + instr + ":" + " istore_" + val);
 		
+		
 	}
 	
 	public void progStart(int stack, int locals, int args_size) {
@@ -63,7 +64,9 @@ public class genByteCode {
 		}
 		else {
 			putByte ("\t\t" + instr + ":" + " istore" + "\t\t" + store);
+			//instr = instr + 1;
 		}
+		
 		store ++;
 		if(instr == 135) {
 			instr = instr - 1;
@@ -85,7 +88,7 @@ public class genByteCode {
 
 	public void loadDouble2W(int label) {
 		instr = instr + 1;
-		putByte ("\t\t" + instr + ":" + " ldc2_w" + "\t\t#" + label);
+		putByte ("\t\t" + instr + ":" + " ldc2_w" + "\t\t#" + label); 
 		
 	}
 
@@ -105,7 +108,7 @@ public class genByteCode {
 	}
 
 	public void loadString(String value){
-		instr = instr + 1;
+		instr = instr + 2;
 		putByte ("\t\t" + instr + ":" + " ldc" + "\t\t\t" + value+"\"");
 	}
 
@@ -140,7 +143,7 @@ public class genByteCode {
 	public void genGetStatic( int label) {
 		instr = instr + 2;
 		putByte ("\t\t" + instr + ":" + " getstatic" + "\t\t#" + label);
-		instr = instr + 1;
+		//instr = instr + 1;
 	}
 	public void genGetStatic( String methodPath){
 		instr = instr + 2;

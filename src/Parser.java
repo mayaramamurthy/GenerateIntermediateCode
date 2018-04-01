@@ -418,8 +418,8 @@ public class Parser {
 			            		SymbolTable.addObject(SymbolTable.JObjectClass.VARIABLE,SymbolTable.JObjectType.INT, variableName, JBC.store);
 			            		JBC.genInt( scanner.val);
 			            		JBC.genStoreInteger();
-			            		currInstr = JBC.instr;
 			    				JBC.genILoad( (int)SymbolTable.find(variableName).value);
+			            		currInstr = JBC.instr - 1;
 			            		JBC.genBipush ( 10);
 			            }
 			            else mark("= expected");
